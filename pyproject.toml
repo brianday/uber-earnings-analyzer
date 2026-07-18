@@ -10,7 +10,7 @@ dependencies = [
 ]
 
 [project.scripts]
-uber-earnings-analyzer = "uber_earnings_analyzer:main"
+uber-earnings-analyzer = "uber_earnings_analyzer.server:main"
 
 [build-system]
 requires = ["uv_build>=0.11.29,<0.12.0"]
