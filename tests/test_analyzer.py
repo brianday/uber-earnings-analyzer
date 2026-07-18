@@ -8,6 +8,7 @@ from uber_earnings_analyzer.analyzer import (
     compare_latest_two_weeks,
     earnings_by_day,
     earnings_by_hour,
+    weekly_earnings_trend,
 )
 from uber_earnings_analyzer.data_loader import load_earnings_csv
 
@@ -65,3 +66,39 @@ def test_compare_latest_two_weeks(sample_data) -> None:
 
     assert result["earnings_change"] == 27.07
     assert result["percentage_change"] == 18.67
+
+def test_weekly_earnings_trend_returns_recent_weeks(
+    sample_data,
+) -> None:
+    """Weekly trends should be chronological and include changes."""
+    results = weekly_earnings_trend(sample_data, weeks=2)
+
+    assert results == [
+        {
+            "start_date": "2026-07-06",
+            "end_date": "2026-07-12",
+            "total_earnings": 145.00,
+            "trip_count": 10,
+            "earnings_change": None,
+            "percentage_change": None,
+        },
+        {
+            "start_date": "2026-07-13",
+            "end_date": "2026-07-19",
+            "total_earnings": 172.07,
+            "trip_count": 11,
+            "earnings_change": 27.07,
+            "percentage_change": 18.67,
+        },
+    ]
+
+
+def test_weekly_earnings_trend_rejects_invalid_week_count(
+    sample_data,
+) -> None:
+    """At least one week must be requested."""
+    with pytest.raises(
+        ValueError,
+        match="weeks must be at least 1",
+    ):
+        weekly_earnings_trend(sample_data, weeks=0)

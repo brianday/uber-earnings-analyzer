@@ -10,6 +10,7 @@ from uber_earnings_analyzer.analyzer import (
     compare_latest_two_weeks,
     earnings_by_day,
     earnings_by_hour,
+    weekly_earnings_trend,
 )
 from uber_earnings_analyzer.data_loader import (
     load_earnings_csv,
@@ -78,6 +79,22 @@ def compare_weeks() -> dict[str, object]:
     """
     dataframe = get_configured_earnings_data()
     return compare_latest_two_weeks(dataframe)
+
+@mcp.tool()
+def get_weekly_earnings_trend(
+    weeks: int = 8,
+) -> list[dict[str, object]]:
+    """Return earnings trends for the most recent calendar weeks.
+
+    Weeks run from Monday through Sunday. Results are chronological and
+    include earnings totals, trip counts, dollar changes, and percentage
+    changes from the preceding returned week.
+
+    Args:
+        weeks: Number of recent weeks to return. Must be at least 1.
+    """
+    dataframe = get_configured_earnings_data()
+    return weekly_earnings_trend(dataframe, weeks=weeks)
 
 
 def main() -> None:
