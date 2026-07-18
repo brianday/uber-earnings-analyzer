@@ -134,3 +134,83 @@ def compare_latest_two_weeks(
         "earnings_change": earnings_change,
         "percentage_change": percentage_change,
     }
+
+def weekly_earnings_trend(
+    dataframe: pd.DataFrame,
+    weeks: int = 8,
+) -> list[dict[str, object]]:
+    """Summarize earnings for the most recent calendar weeks.
+
+    Weeks run from Monday through Sunday. Results are returned in
+    chronological order so changes can be interpreted as a trend.
+
+    Args:
+        dataframe: Cleaned earnings data from the CSV loader.
+        weeks: Maximum number of recent calendar weeks to return.
+
+    Returns:
+        Weekly totals, trip counts, and week-over-week changes.
+
+    Raises:
+        ValueError: If weeks is less than one.
+    """
+    if weeks < 1:
+        raise ValueError("weeks must be at least 1")
+
+    working_data = dataframe.copy()
+
+    working_data["week"] = (
+        working_data["trip_datetime"]
+        .dt.to_period("W-SUN")
+    )
+
+    weekly_summary = (
+        working_data.groupby("week", as_index=False)
+        .agg(
+            total_earnings=("earnings", "sum"),
+            trip_count=("earnings", "size"),
+        )
+        .sort_values("week")
+        .tail(weeks)
+        .reset_index(drop=True)
+    )
+
+    weekly_summary["total_earnings"] = weekly_summary[
+        "total_earnings"
+    ].round(2)
+
+    results: list[dict[str, object]] = []
+    previous_total: float | None = None
+
+    for row in weekly_summary.itertuples(index=False):
+        current_total = float(row.total_earnings)
+
+        earnings_change = None
+        percentage_change = None
+
+        if previous_total is not None:
+            earnings_change = round(
+                current_total - previous_total,
+                2,
+            )
+
+            if previous_total != 0:
+                percentage_change = round(
+                    (earnings_change / previous_total) * 100,
+                    2,
+                )
+
+        results.append(
+            {
+                "start_date": row.week.start_time.date().isoformat(),
+                "end_date": row.week.end_time.date().isoformat(),
+                "total_earnings": current_total,
+                "trip_count": int(row.trip_count),
+                "earnings_change": earnings_change,
+                "percentage_change": percentage_change,
+            }
+        )
+
+        previous_total = current_total
+
+    return results
