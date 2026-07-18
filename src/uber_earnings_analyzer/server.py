@@ -5,6 +5,7 @@ from pathlib import Path
 from mcp.server.fastmcp import FastMCP
 
 from uber_earnings_analyzer.analyzer import (
+    compare_latest_two_weeks,
     earnings_by_day,
     earnings_by_hour,
 )
@@ -43,6 +44,17 @@ def get_earnings_by_hour() -> list[dict[str, object]]:
     """
     dataframe = load_earnings_csv(DEFAULT_CSV_PATH)
     return earnings_by_hour(dataframe)
+
+
+@mcp.tool()
+def compare_weeks() -> dict[str, object]:
+    """Compare the latest calendar week with the previous week.
+
+    Weeks run from Monday through Sunday. The latest trip date in the
+    dataset determines which week is treated as the current week.
+    """
+    dataframe = load_earnings_csv(DEFAULT_CSV_PATH)
+    return compare_latest_two_weeks(dataframe)
 
 
 def main() -> None:

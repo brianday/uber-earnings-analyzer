@@ -18,7 +18,7 @@ def test_load_valid_sample_csv() -> None:
     """The sample CSV should load with normalized data types."""
     dataframe = load_earnings_csv(SAMPLE_CSV)
 
-    assert len(dataframe) == 11
+    assert len(dataframe) == 21
     assert list(dataframe.columns) == ["trip_datetime", "earnings"]
     assert pd.api.types.is_datetime64_any_dtype(
         dataframe["trip_datetime"]
