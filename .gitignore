@@ -1,10 +1,22 @@
-# Python-generated files
-__pycache__/
-*.py[oc]
-build/
-dist/
-wheels/
-*.egg-info
+# Python virtual environment
+.venv/
 
-# Virtual environments
-.venv
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+
+# Test and coverage caches
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Editor settings
+.vscode/
+
+# Private Uber exports
+data/raw/*
+!data/raw/.gitkeep
+
+# Environment variables and secrets
+.env
+.env.*
