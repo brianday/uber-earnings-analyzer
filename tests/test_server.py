@@ -7,6 +7,11 @@ from mcp.shared.memory import (
 
 from uber_earnings_analyzer.server import mcp
 
+@pytest.fixture(autouse=True)
+def use_sample_data(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Ensure MCP tests use the deterministic public sample dataset."""
+    monkeypatch.delenv("UBER_EARNINGS_CSV", raising=False)
+
 
 @pytest.mark.anyio
 async def test_server_exposes_expected_tools() -> None:
